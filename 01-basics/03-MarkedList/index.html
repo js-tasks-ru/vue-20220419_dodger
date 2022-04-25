@@ -14,13 +14,16 @@
     <div id="app" style="margin-top: 2rem">
       <div class="container">
         <div class="form-group">
-          <input type="search" />
+          <input v-model="search" type="search" />
         </div>
         <ul>
-          <li>Email</li>
-          <li class="marked">Email</li>
-          <li>...</li>
-          <li>Email</li>
+          <li
+            v-for="(objItem, indexItem) in emailsMarked"
+            :key="indexItem"
+            :class="{ 'marked': objItem.isMarked }"
+          >
+            {{ objItem.email }}
+          </li>
         </ul>
       </div>
     </div>
