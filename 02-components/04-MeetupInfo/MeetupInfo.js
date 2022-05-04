@@ -19,14 +19,14 @@ export default defineComponent({
   },
 
   computed: {
-    getLocalDate() {
+    dateLocal() {
       return new Date(this.date).toLocaleString(navigator.language, {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       });
     },
-    getISODate() {
+    dateISO() {
       return new Date(this.date).toISOString().slice(0, 10);
     },
   },
@@ -43,7 +43,7 @@ export default defineComponent({
       </li>
       <li>
         <img class="icon meetup-info__icon" alt="icon" src="/assets/icons/icon-cal-lg.svg" />
-        <time :datetime="getISODate">{{ getLocalDate }}</time>
+        <time :datetime="dateISO">{{ dateLocal }}</time>
       </li>
     </ul>`,
 });
