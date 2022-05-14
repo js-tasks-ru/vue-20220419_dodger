@@ -28,7 +28,7 @@
         :class="{ 'dropdown__item_icon': hasIcon }"
         role="option"
         type="button"
-        @click="selectedOption = objOption.value"
+        @click="$emit('update:modelValue', objOption.value)"
       >
         <ui-icon
           v-if="objOption.icon"
@@ -39,7 +39,7 @@
       </button>
     </div>
 
-    <select @change="changeSelect" style="display: none">
+    <select @change="$emit('update:modelValue', $event.target.value)" style="display: none">
       <option
         v-for="(objOption, indexOption) in options"
         :key="`${indexOption}-select`"
@@ -77,34 +77,16 @@ export default {
 
   data () {
     return {
-      isOpen: false,
-      select: ''
+      isOpen: false
     }
-  },
-
-  watch: {
-    select (newValue) {
-      this.$emit('update:modelValue', newValue)
-    },
   },
 
   computed: {
-    selectedOption: {
-      get () {
-        return this.options.find(objOption => objOption.value === this.modelValue)
-      },
-      set (newValue) {
-        this.$emit('update:modelValue', newValue)
-      }
+    selectedOption () {
+      return this.options.find(objOption => objOption.value === this.modelValue)
     },
     hasIcon () {
       return this.options.some(objOption => objOption.icon)
-    }
-  },
-
-  methods: {
-    changeSelect (event) {
-      this.selectedOption = event.target.value;
     }
   },
 
