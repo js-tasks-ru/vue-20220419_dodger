@@ -22,8 +22,8 @@
       class="dropdown__menu" role="listbox"
     >
       <button
-        v-for="(objOption, indexOption) in options"
-        :key="`${indexOption}-button`"
+        v-for="objOption in options"
+        :key="objOption.value"
         class="dropdown__item"
         :class="{ 'dropdown__item_icon': hasIcon }"
         role="option"
@@ -41,8 +41,8 @@
 
     <select @change="$emit('update:modelValue', $event.target.value)" style="display: none">
       <option
-        v-for="(objOption, indexOption) in options"
-        :key="`${indexOption}-select`"
+        v-for="objOption in options"
+        :key="objOption.value"
         :selected="modelValue === objOption.value"
         :value="objOption.value"
       >
