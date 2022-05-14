@@ -1,8 +1,10 @@
 <template>
-  <div class="toast">
+  <div
+    class="toast"
+    :class="types[type].class"
+  >
     <ui-icon
       class="toast__icon"
-      :class="types[type].class"
       :icon="types[type].icon"
     />
     <span>{{ message }}</span>
