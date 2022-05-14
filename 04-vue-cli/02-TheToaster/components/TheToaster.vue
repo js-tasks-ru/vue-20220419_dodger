@@ -1,24 +1,57 @@
 <template>
   <div class="toasts">
-    <div class="toast toast_success">
-      <ui-icon class="toast__icon" icon="check-circle" />
-      <span>Success Toast Example</span>
-    </div>
-
-    <div class="toast toast_error">
-      <ui-icon class="toast__icon" icon="alert-circle" />
-      <span>Error Toast Example</span>
-    </div>
+    <ui-toast
+      v-for="(objToast, indexToast) in arrToasts"
+      :key="indexToast"
+      :icon="objToast.icon"
+      :message="objToast.message"
+      :class="objToast.class"
+    />
   </div>
 </template>
 
 <script>
-import UiIcon from './UiIcon';
+import UiToast from "./UiToast";
 
 export default {
   name: 'TheToaster',
+  components: { UiToast },
+  data () {
+    return {
+      arrToasts: []
+    }
+  },
+  methods: {
+    randomHash () {
+      return Math.random().toString(24).slice(0, 7)
+    },
+    success (message) {
+      this.onAddToast({
+        message,
+        icon: 'check-circle',
+        class: 'toast_success'
+      })
+    },
+    error (message) {
+      this.onAddToast({
+        message,
+        icon: 'alert-circle',
+        class: 'toast_error'
+      })
+    },
+    onAddToast (objToast) {
+      const RANDOM_HASH = this.randomHash()
 
-  components: { UiIcon },
+      this.arrToasts.push({
+        _innerId: RANDOM_HASH,
+        ...objToast
+      })
+
+      setTimeout(() => {
+        this.arrToasts = this.arrToasts.filter(objToast => objToast._innerId !== RANDOM_HASH)
+      }, 5000)
+    },
+  }
 };
 </script>
 
@@ -59,7 +92,7 @@ export default {
   margin-top: 20px;
 }
 
-.toast__icon {
+::v-deep(.toast__icon) {
   margin-right: 12px;
 }
 
