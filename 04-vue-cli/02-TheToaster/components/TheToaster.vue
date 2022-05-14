@@ -1,24 +1,54 @@
 <template>
   <div class="toasts">
-    <div class="toast toast_success">
-      <ui-icon class="toast__icon" icon="check-circle" />
-      <span>Success Toast Example</span>
-    </div>
-
-    <div class="toast toast_error">
-      <ui-icon class="toast__icon" icon="alert-circle" />
-      <span>Error Toast Example</span>
-    </div>
+    <ui-toast
+      v-for="objToast in arrToasts"
+      :key="objToast._innerId"
+      :type="objToast.type"
+      :message="objToast.message"
+    />
   </div>
 </template>
 
 <script>
-import UiIcon from './UiIcon';
+import UiToast from "./UiToast";
 
 export default {
   name: 'TheToaster',
+  components: { UiToast },
+  data () {
+    return {
+      arrToasts: []
+    }
+  },
+  methods: {
+    randomHash () {
+      return Math.random().toString(24).slice(0, 7)
+    },
+    success (message) {
+      this.onAddToast({
+        message,
+        type: 'success'
+      })
+    },
+    error (message) {
+      this.onAddToast({
+        message,
+        type: 'error'
+      })
+    },
+    onAddToast (objToast) {
+      const RANDOM_HASH = this.randomHash()
 
-  components: { UiIcon },
+      this.arrToasts.push({
+        _innerId: RANDOM_HASH,
+        ...objToast
+      })
+
+      setTimeout(() => {
+        this.arrToasts = this.arrToasts.filter(objToast => objToast._innerId !== RANDOM_HASH)
+      }, 5000)
+    },
+  }
 };
 </script>
 
@@ -39,35 +69,5 @@ export default {
     bottom: 72px;
     right: 112px;
   }
-}
-
-.toast {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: row;
-  align-items: center;
-  padding: 16px;
-  background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-  font-size: 18px;
-  line-height: 28px;
-  width: auto;
-}
-
-.toast + .toast {
-  margin-top: 20px;
-}
-
-.toast__icon {
-  margin-right: 12px;
-}
-
-.toast.toast_success {
-  color: var(--green);
-}
-
-.toast.toast_error {
-  color: var(--red);
 }
 </style>
