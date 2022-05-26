@@ -36,32 +36,28 @@ export default {
       default: undefined,
     },
   },
+  data() {
+    return {
+      status: this.preview ? 'success' : 'empty',
+      selectedFile: null,
+    };
+  },
   computed: {
     url () {
       return this.preview || URL.createObjectURL(this.selectedFile);
     },
     statusText() {
-      let result = 'Загрузить изображение';
-
-      if (this.preview || (this.selectedFile && !this.uploader)) {
-        result = 'Удалить изображение';
-      } else if (this.isLoad) {
-        result = 'Загрузка...';
-      }
-
-      return result;
+      return {
+        'load': 'Загрузка...',
+        'success': 'Удалить изображение',
+        'empty': 'Загрузить изображение'
+      }[this.status]
     },
-  },
-  data() {
-    return {
-      isLoad: false,
-      selectedFile: null,
-    };
   },
   emits: ['select', 'remove', 'upload', 'error'],
   methods: {
     onClick() {
-      if (this.isLoad) return;
+      if (this.status === 'load') return;
 
       this.$emit('remove');
       this.remove();
@@ -71,25 +67,25 @@ export default {
       this.$emit('select', file);
 
       if (!this.uploader) {
+        this.status = 'success'
         this.selectedFile = file
         return;
       }
 
-      this.isLoad = true;
+      this.status = 'load'
 
       this.uploader(file)
         .then((data) => {
           this.$emit('upload', data);
+          this.status = 'success'
         })
         .catch((err) => {
           this.remove();
           this.$emit('error', err);
         })
-        .finally(() => {
-          this.isLoad = false;
-        });
     },
     remove() {
+      this.status = 'empty'
       this.$refs['input'].value = null;
       this.selectedFile = null;
     },
