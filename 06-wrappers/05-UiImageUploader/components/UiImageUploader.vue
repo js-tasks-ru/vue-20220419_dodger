@@ -1,8 +1,23 @@
 <template>
   <div class="image-uploader">
-    <label class="image-uploader__preview image-uploader__preview-loading" style="--bg-url: url('/link.jpeg')">
-      <span class="image-uploader__text">Загрузить изображение</span>
-      <input type="file" accept="image/*" class="image-uploader__input" />
+    <label
+      class="image-uploader__preview"
+      :class="{ 'image-uploader__preview-loading': uploader }"
+      :style="`--bg-url: url(${url})`"
+    >
+      <span class="image-uploader__text">
+        {{ statusText }}
+      </span>
+
+      <input
+        ref="input"
+        type="file"
+        v-bind="$attrs"
+        accept="image/*"
+        class="image-uploader__input"
+        @change="onSelect"
+        @click="onClick"
+      />
     </label>
   </div>
 </template>
@@ -10,6 +25,75 @@
 <script>
 export default {
   name: 'UiImageUploader',
+  inheritAttrs: false,
+  props: {
+    preview: {
+      type: String,
+      default: '',
+    },
+    uploader: {
+      type: Function,
+      default: undefined,
+    },
+  },
+  computed: {
+    url () {
+      return this.preview || URL.createObjectURL(this.selectedFile);
+    },
+    statusText() {
+      let result = 'Загрузить изображение';
+
+      if (this.preview || (this.selectedFile && !this.uploader)) {
+        result = 'Удалить изображение';
+      } else if (this.isLoad) {
+        result = 'Загрузка...';
+      }
+
+      return result;
+    },
+  },
+  data() {
+    return {
+      isLoad: false,
+      selectedFile: null,
+    };
+  },
+  emits: ['select', 'remove', 'upload', 'error'],
+  methods: {
+    onClick() {
+      if (this.isLoad) return;
+
+      this.$emit('remove');
+      this.remove();
+    },
+    onSelect(event) {
+      const file = event.srcElement.files[0];
+      this.$emit('select', file);
+
+      if (!this.uploader) {
+        this.selectedFile = file
+        return;
+      }
+
+      this.isLoad = true;
+
+      this.uploader(file)
+        .then((data) => {
+          this.$emit('upload', data);
+        })
+        .catch((err) => {
+          this.remove();
+          this.$emit('error', err);
+        })
+        .finally(() => {
+          this.isLoad = false;
+        });
+    },
+    remove() {
+      this.$refs['input'].value = null;
+      this.selectedFile = null;
+    },
+  },
 };
 </script>
 
